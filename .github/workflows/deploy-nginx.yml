@@ -1,6 +1,7 @@
 name: Deploy Nginx to AWS ECS
 
 on:
+  workflow_dispatch:  # Permite la ejecución manual
   push:
     branches:
       - main
