@@ -1,0 +1,18 @@
+{
+    "family": "my-nginx-task",
+    "containerDefinitions": [
+        {
+            "name": "nginx-container",
+            "image": "REPLACEME_ECR_IMAGE",
+            "memory": 512,
+            "cpu": 256,
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": 4000,
+                    "hostPort": 4000
+                }
+            ]
+        }
+    ]
+}
