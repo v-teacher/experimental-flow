@@ -1,4 +1,4 @@
-Pull the minimal Ubuntu image
+# Pull the minimal Ubuntu image
 FROM ubuntu
 
 # Install Nginx
