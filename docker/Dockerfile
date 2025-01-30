@@ -1,12 +1,14 @@
-FROM nginx:alpine
+Pull the minimal Ubuntu image
+FROM ubuntu
 
-# Configurar Nginx
-COPY nginx.conf /etc/nginx/nginx.conf
+# Install Nginx
+RUN apt-get -y update && apt-get -y install nginx
 
-# Agregar archivo HTML a la carpeta pública
-COPY index.html /usr/share/nginx/html/index.html
+# Copy the Nginx config
+COPY default /etc/nginx/sites-available/default
 
-# Exponer el puerto 80
-EXPOSE 80
+# Expose the port for access
+EXPOSE 80/tcp
 
-CMD ["nginx", "-g", "daemon off;"]
+# Run the Nginx server
+CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
