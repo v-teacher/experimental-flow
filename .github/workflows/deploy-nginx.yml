@@ -8,7 +8,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  DOCKERHUB_REPOSITORY: duoc/img
+  DOCKERHUB_REPOSITORY: vmunozvaleria/duoc
   ECS_CLUSTER: cluster-duoc-2025
   ECS_SERVICE: my-nginx-service
   ECS_TASK_DEFINITION: ecs-task-definition.json
