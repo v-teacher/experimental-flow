@@ -1,14 +1,14 @@
 name: Deploy Nginx to AWS ECS
 
 on:
-  workflow_dispatch:  # Permite la ejecución manual
+  workflow_dispatch:
   push:
     branches:
       - main
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: duoc/img
+  DOCKERHUB_REPOSITORY: vmunozvaleria/duoc
   ECS_CLUSTER: cluster-duoc-2025
   ECS_SERVICE: my-nginx-service
   ECS_TASK_DEFINITION: ecs-task-definition.json
@@ -31,30 +31,24 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and push Docker image to Amazon ECR
+      - name: Build and push Docker image to Docker Hub
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}  # SHA del commit as tag
+          IMAGE_TAG: ${{ github.sha }}  # SHA del commit como tag
         run: |
           # Construir la imagen con múltiples tags
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest ./docker
+          docker build -t $DOCKERHUB_REPOSITORY:$IMAGE_TAG -t $DOCKERHUB_REPOSITORY:latest ./docker
           
-          # both to ECR
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          # Subir la imagen a Docker Hub
+          docker push $DOCKERHUB_REPOSITORY:$IMAGE_TAG
+          docker push $DOCKERHUB_REPOSITORY:latest
 
       # - name: Replace image tag in ECS task definition
       #   run: |
       #     IMAGE_TAG=${{ github.sha }}  # Usa el SHA del commit como tag
-      #     ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY=${{ env.ECR_REPOSITORY }}
+      #     DOCKERHUB_REPOSITORY=${{ env.DOCKERHUB_REPOSITORY }}
 
       #     # Reemplaza la imagen en el archivo JSON
-      #     sed -i "s|\${ECR_REGISTRY}/${ECR_REPOSITORY}:\${IMAGE_TAG}|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" ecs-task-definition.json
+      #     sed -i "s|\${DOCKERHUB_REPOSITORY}:\${IMAGE_TAG}|$DOCKERHUB_REPOSITORY:$IMAGE_TAG|g" ecs-task-definition.json
 
       # - name: Update ECS Task Definition
       #   id: task-def
@@ -62,7 +56,7 @@ jobs:
       #   with:
       #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
       #     container-name: ${{ env.CONTAINER_NAME }}
-      #     image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+      #     image: ${{ env.DOCKERHUB_REPOSITORY }}:${{ github.sha }}
 
       # - name: Deploy updated ECS service
       #   run: |
